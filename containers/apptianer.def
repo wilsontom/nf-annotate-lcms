@@ -1,0 +1,8 @@
+Bootstrap: docker
+From: continuumio/miniconda3
+
+%post
+   apt-get update -y
+   conda install conda-forge::pyjanitor
+   conda install -c bioconda lamps
+ 
