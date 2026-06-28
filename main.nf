@@ -18,8 +18,9 @@ workflow {
 
     values_ch = Channel.fromPath(params.values, checkIfExists: true)
     features_ch = Channel.fromPath(params.features, checkIfExists: true)
+    converter_script_ch = Channel.fromPath("${projectDir}/scripts/convert_xcms_to_lamp.R", checkIfExists: true)
 
-    CONVERT_XCMS_TO_LAMP(values_ch, features_ch)
+    CONVERT_XCMS_TO_LAMP(values_ch, features_ch, converter_script_ch)
 
     if (!params.skip_lamp) {
         RUN_LAMP_ANNOTATION(CONVERT_XCMS_TO_LAMP.out.lamp_input)
@@ -34,13 +35,14 @@ process CONVERT_XCMS_TO_LAMP {
     input:
     path values
     path features
+    path converter_script
 
     output:
     path params.output_name, emit: lamp_input
 
     script:
     """
-    ${params.rscript_bin} ${projectDir}/scripts/convert_xcms_to_lamp.R \\
+    ${params.rscript_bin} ${converter_script} \\
       --values=${values} \\
       --features=${features} \\
       --output=${params.output_name} \\

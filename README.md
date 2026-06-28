@@ -169,5 +169,11 @@ nextflow run wilsontom/nf-annotate-lcms -profile hpc \
 - LAMP can take several minutes or longer depending on the number of features and samples.
 - When running from GitHub, Nextflow downloads the workflow code to its asset cache. Input paths are still resolved relative to the directory where you launch the command.
 - The HPC profile assumes the Apptainer image contains both `/opt/conda/bin/Rscript` and `/opt/conda/bin/lamp`. The bundled definition file installs both. If you use a different image, override `--rscript_bin` and `--lamp_bin` or rebuild the image with R and LAMP installed.
+- If a hosted GitHub run uses an older cached revision, add `-latest` to refresh the workflow:
+
+```bash
+nextflow run wilsontom/nf-annotate-lcms -latest -profile hpc ...
+```
+
 - Use `--skip_lamp true` when you only need to generate the LAMP input table.
 - If the number of rows differs between `--values` and `--features`, the conversion step fails before LAMP runs.
