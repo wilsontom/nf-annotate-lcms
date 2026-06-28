@@ -138,6 +138,8 @@ nextflow run wilsontom/nf-annotate-lcms -profile hpc \
 | `--sep` | `tab` | Output separator for converted table, `tab` or `comma`. |
 | `--mz_col` | `mzmed` | m/z column in the feature definitions table. |
 | `--rt_col` | `rtmed` | Retention time column in the feature definitions table. |
+| `--rscript_bin` | `Rscript` | Rscript executable. The `hpc` profile defaults to `/opt/conda/bin/Rscript`. |
+| `--lamp_bin` | `lamp` | LAMP executable. The `hpc` profile defaults to `/opt/conda/bin/lamp`. |
 | `--skip_lamp` | `false` | Stop after creating the LAMP input table. |
 | `--lamp_ion_mode` | `neg` | LAMP ion mode, `pos` or `neg`. |
 | `--lamp_thres_rt` | `1.0` | Retention time threshold. |
@@ -166,5 +168,6 @@ nextflow run wilsontom/nf-annotate-lcms -profile hpc \
 
 - LAMP can take several minutes or longer depending on the number of features and samples.
 - When running from GitHub, Nextflow downloads the workflow code to its asset cache. Input paths are still resolved relative to the directory where you launch the command.
+- The HPC profile assumes the Apptainer image contains both `/opt/conda/bin/Rscript` and `/opt/conda/bin/lamp`. The bundled definition file installs both. If you use a different image, override `--rscript_bin` and `--lamp_bin` or rebuild the image with R and LAMP installed.
 - Use `--skip_lamp true` when you only need to generate the LAMP input table.
 - If the number of rows differs between `--values` and `--features`, the conversion step fails before LAMP runs.

@@ -40,7 +40,7 @@ process CONVERT_XCMS_TO_LAMP {
 
     script:
     """
-    Rscript ${projectDir}/scripts/convert_xcms_to_lamp.R \\
+    ${params.rscript_bin} ${projectDir}/scripts/convert_xcms_to_lamp.R \\
       --values=${values} \\
       --features=${features} \\
       --output=${params.output_name} \\
@@ -72,7 +72,7 @@ process RUN_LAMP_ANNOTATION {
     def add_args = params.lamp_add_path ? "--add-path ${params.lamp_add_path} --add-sep ${params.lamp_add_sep}" : ''
 
     """
-    lamp cli \\
+    ${params.lamp_bin} cli \\
       --input-data ${lamp_input} \\
       --col-idx "${params.lamp_col_idx}" \\
       --input-sep ${params.sep} \\
