@@ -3,6 +3,7 @@ From: continuumio/miniconda3
 
 %post
    apt-get update -y
-   conda install conda-forge::pyjanitor
-   conda install -c bioconda lamps
+   conda install -y -c conda-forge r-base pyjanitor
+   conda install -y -c bioconda lamps
+   conda clean -afy
  
