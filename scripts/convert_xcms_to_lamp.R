@@ -84,6 +84,52 @@ normalise_feature_names <- function(values) {
   feature_names
 }
 
+coerce_intensity_matrix <- function(values) {
+  if (ncol(values) < 2L) {
+    stop(
+      "Feature values table must contain a feature name column followed by one or more sample intensity columns.",
+      call. = FALSE
+    )
+  }
+
+  intensity_matrix <- values[-1L]
+  invalid_cols <- character()
+  invalid_examples <- character()
+
+  for (col_name in colnames(intensity_matrix)) {
+    original <- intensity_matrix[[col_name]]
+    numeric_values <- suppressWarnings(as.numeric(original))
+    non_missing <- !(is.na(original) | original == "")
+    invalid <- non_missing & is.na(numeric_values)
+
+    if (any(invalid)) {
+      invalid_cols <- c(invalid_cols, col_name)
+      example <- as.character(original[which(invalid)[1L]])
+      if (nchar(example) > 80L) {
+        example <- paste0(substr(example, 1L, 80L), "...")
+      }
+      invalid_examples <- c(invalid_examples, example)
+    } else {
+      intensity_matrix[[col_name]] <- numeric_values
+    }
+  }
+
+  if (length(invalid_cols) > 0L) {
+    examples <- paste(
+      sprintf("%s=%s", invalid_cols, invalid_examples),
+      collapse = "; "
+    )
+    stop(
+      "Feature values table contains non-numeric sample intensity columns. ",
+      "Check that --values points to the intensity matrix and --features points to the feature definitions table. ",
+      "Invalid column examples: ", examples,
+      call. = FALSE
+    )
+  }
+
+  intensity_matrix
+}
+
 main <- function() {
   opts <- parse_args(commandArgs(trailingOnly = TRUE))
 
@@ -109,7 +155,7 @@ main <- function() {
   }
 
   feature_names <- normalise_feature_names(values)
-  intensity_matrix <- values[-1L]
+  intensity_matrix <- coerce_intensity_matrix(values)
 
   lamp_table <- data.frame(
     name = feature_names,

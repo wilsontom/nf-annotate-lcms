@@ -32,6 +32,8 @@ The workflow requires two CSV files:
 - `--values`: feature intensity matrix. The first column is used as the feature name, and all remaining columns are treated as sample intensity columns.
 - `--features`: feature definition table. This must have the same number of rows as `--values` and contain m/z and retention time columns.
 
+Do not swap these arguments. If `--values` points to a feature definition table, columns such as `peakidx` can be passed to LAMP as sample intensities and LAMP will fail because the intensity matrix must be numeric.
+
 By default, the feature definition columns are:
 
 - m/z: `mzmed`
@@ -169,6 +171,7 @@ nextflow run wilsontom/nf-annotate-lcms -profile hpc \
 - LAMP can take several minutes or longer depending on the number of features and samples.
 - When running from GitHub, Nextflow downloads the workflow code to its asset cache. Input paths are still resolved relative to the directory where you launch the command.
 - The HPC profile assumes the Apptainer image contains both `/opt/conda/bin/Rscript` and `/opt/conda/bin/lamp`. The bundled definition file installs both. If you use a different image, override `--rscript_bin` and `--lamp_bin` or rebuild the image with R and LAMP installed.
+- If conversion fails with `Feature values table contains non-numeric sample intensity columns`, check that `--values` is the intensity matrix and `--features` is the feature definitions table.
 - If a hosted GitHub run uses an older cached revision, add `-latest` to refresh the workflow:
 
 ```bash
