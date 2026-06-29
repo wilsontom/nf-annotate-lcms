@@ -93,6 +93,18 @@ coerce_intensity_matrix <- function(values) {
   }
 
   intensity_matrix <- values[-1L]
+  metadata_cols <- intersect(colnames(intensity_matrix), c("peakidx", "ms_level"))
+  if (length(metadata_cols) > 0L) {
+    intensity_matrix <- intensity_matrix[setdiff(colnames(intensity_matrix), metadata_cols)]
+  }
+
+  if (ncol(intensity_matrix) < 1L) {
+    stop(
+      "Feature values table has no sample intensity columns after removing metadata columns peakidx and ms_level.",
+      call. = FALSE
+    )
+  }
+
   invalid_cols <- character()
   invalid_examples <- character()
 
