@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    name: Nextflow smoke test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Nextflow
+        uses: nextflow-io/setup-nextflow@v2
+        with:
+          version: "26.04.0"
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+
+      - name: Render Nextflow config
+        run: |
+          nextflow config
+          nextflow config -profile hpc
+
+      - name: Run conversion smoke test
+        run: |
+          nextflow run . -profile local,test --skip_lamp true
+
+      - name: Check LAMP input output
+        run: |
+          test -s results/test/lamp_input.tsv
+          head -n 1 results/test/lamp_input.tsv | grep -q $'^name\tmz\trt\t'
+          ! head -n 1 results/test/lamp_input.tsv | grep -Eq $'\t(peakidx|ms_level)(\t|$)'
